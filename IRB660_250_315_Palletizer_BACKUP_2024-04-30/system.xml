@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SystemProperties>
+  <SystemName>IRB660_250_315_Palletizer</SystemName>
+  <SerialNo>VIRTUAL_USE</SerialNo>
+  <UsedMedia>
+    <Media path="C:\Users\IDJOSYE\AppData\Local\ABB\RobotWare\RobotWare_6.15.6022" name="RobotWare" version="6.15.6022">
+    </Media>
+  </UsedMedia>
+  <ControlModule>
+    <Option descr="RobotWare Base">
+    </Option>
+    <Option descr="709-1 DeviceNet Master/Slave">
+    </Option>
+    <Option descr="608-1 World Zones">
+    </Option>
+    <Option descr="613-1 Collision Detection">
+    </Option>
+    <Option descr="English">
+    </Option>
+  </ControlModule>
+  <DriveModule>
+    <Name>Robot1</Name>
+    <Option descr="Drive System IRB 460/640/660/760/4600/66xx/6700">
+    </Option>
+    <Option descr="ADU-790A in position X3">
+    </Option>
+    <Option descr="ADU-790A in position Y3">
+    </Option>
+    <Option descr="ADU-790A in position Z3">
+    </Option>
+    <Option descr="Axis Calibration">
+    </Option>
+    <Option descr="IRB 660-250/3.15">
+    </Option>
+  </DriveModule>
+</SystemProperties>

@@ -1,0 +1,111 @@
+MODULE SystemData(SYSMODULE)
+
+VAR num  nCase_to_Bay_Code1:=0;
+VAR num  nCase_to_Bay_Code2:=0;
+VAR num  nGDI_Case_to_Bay_Code:=0;
+    
+VAR dionum dioBay1_Pallet_Full:= 0;
+VAR dionum dioBay2_Pallet_Full:= 0;
+VAR dionum dioBay3_Pallet_Full:= 0;
+VAR dionum dioBay4_Pallet_Full:= 0;
+VAR dionum dioBay5_Pallet_Full:= 0;
+
+VAR dionum mxDischarge_Signal{2,5}:= [[0, 0, 0, 0, 0],
+                                      [0, 0, 0, 0, 0]];
+                                        
+VAR dionum mxPLC_Dicharge{2,5}:= [[0, 0, 0, 0, 0],
+                                  [0, 0, 0, 0, 0]];
+
+PERS num mxStatus{3,5}:= [[0, 0, 0, 0, 0],
+                          [0, 0, 0, 0, 0],
+                          [0, 0, 0, 0, 0]];
+
+VAR dionum arPallet_Present{5}:= [0,0,0,0,0];
+VAR num arList_Pattern{5}:= [0,0,0,0,0];
+var num arSeqCode_Place{5};
+VAR robtarget arPallet_Place{5};
+
+
+PERS NUM  nBox_Layer:=1;
+PERS NUM  nBox_Layer_Bay1:=1;
+PERS NUM  nBox_Layer_Bay2:=1;
+PERS NUM  nBox_Layer_Bay3:=1;
+PERS NUM  nBox_Layer_Bay4:=1;
+PERS NUM  nBox_Layer_Bay5:=1;
+
+PERS NUM  nBox_Count:=0;
+PERS NUM  nBox_Count_Bay1:=1;
+PERS NUM  nBox_Count_Bay2:=1;
+PERS NUM  nBox_Count_Bay3:=1;
+PERS NUM  nBox_Count_Bay4:=1;
+PERS NUM  nBox_Count_Bay5:=1;
+
+PERS NUM  nBox_Pattern:=2;
+PERS NUM  nBox_Pattern_Bay1:=0;
+PERS NUM  nBox_Pattern_Bay2:=0;
+PERS NUM  nBox_Pattern_Bay3:=0;
+PERS NUM  nBox_Pattern_Bay4:=0;
+PERS NUM  nBox_Pattern_Bay5:=0;                              
+                            
+VAR NUM  nErrorCode := 0;
+VAR NUM  nSeqCode := 0;
+VAR NUM  nResponse_Key := 0;
+VAR NUM  station_number:=0;
+
+!Workobject Pick-up Box from Top conveyor
+PERS wobjdata wBoxPick_Right:=[FALSE,TRUE,"",[[0,0,0],[1,0,0,0]],[[2476.4,-179.214,0],[9.86329E-05,0.000762091,1,0.00012383]]];
+
+!Workobject Pick-up Box from Bottom conveyor
+PERS wobjdata wBoxPick_Left:=[FALSE,TRUE,"",[[0,0,0],[1,0,0,0]],[[1346.66,-148.94,0],[0.00010103,1.90703E-06,1,0.000363233]]];
+
+!Workobject Pick-up Pallet from Pallet conveyor
+PERS wobjdata wPalletPick:=[FALSE,TRUE,"",[[0,0,0],[1,0,0,0]],[[0,0,0],[1,0,0,0]]];
+
+!Workobject Pallet Line
+PERS wobjdata wPalletPlace:=[FALSE,TRUE,"",[[0,0,0],[1,0,0,0]],[[0,0,0],[1,0,0,0]]];
+
+
+! Reference Position of Pick-up Pallet Conveyor
+CONST robtarget pPalletPick_Conveyor:=[[-1758.11,-1184.93,-20.06],[1.01359E-06,-0.999999,0.00133435,-1.49957E-06],[-2,0,0,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+
+! Reference Position of Pallet Place for Bay1
+CONST robtarget pPalletPlace_Bay1:=[[1405.69,-1453.91,-60.51],[1.80992E-06,-0.712706,-0.701463,-1.61298E-08],[-1,0,0,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+! Reference Position of Pallet Place for Bay2
+CONST robtarget pPalletPlace_Bay2:=[[-176.49,-1775.80,-21.54],[1.17306E-06,-0.720238,-0.693727,-1.37841E-06],[-2,0,-1,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+! Reference Position of Pallet Place for Bay3
+CONST robtarget pPalletPlace_Bay3:=[[1467.50,1681.07,-61.03],[1.80451E-06,0.699918,-0.714223,1.40751E-07],[0,0,-1,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+! Reference Position of Pallet Place for Bay4
+CONST robtarget pPalletPlace_Bay4:=[[-268.16,1867.13,-54.63],[1.0683E-06,0.698987,-0.715134,1.4611E-06],[1,0,0,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+! Reference Position of Pallet Place for Bay5
+CONST robtarget pPalletPlace_Bay5:=[[-1755.61,1212.77,-13.01],[1.02552E-06,0.999998,-0.00216176,1.49144E-06],[1,0,-1,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+
+
+
+!ROBTARGET Pick Pallet
+PERS robtarget pPalletCurPos:=[[-692.379,569.976,243.998],[2.75665E-05,-0.705734,0.708478,-3.96528E-05],[0,0,-1,0],[9E+09,9E+09,9E+09, 9E+09,9E+09,9E+09]];
+PERS robtarget pPalletLastCurPos:=[[-692.379,569.976,243.998],[2.75665E-05,-0.705734,0.708478,-3.96528E-05],[0,0,-1,0],[9E+09,9E+09,9E+09, 9E+09,9E+09,9E+09]];
+PERS robtarget pPalletPick:=[[-1758.11,-1184.93,-20.06],[1.01359E-06,-0.999999,0.00133435,-1.49957E-06],[-2,0,0,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+PERS robtarget pPalletClearPick:=[[-1758.11,-1184.93,2079.94],[1.01359E-06,-0.999999,0.00133435,-1.49957E-06],[-2,0,0,0],[9E+09,9E+09,9E+09, 9E+09,9E+09,9E+09]];
+PERS robtarget pPalletWaitPick:=[[-1758.11,-1184.93,1179.94],[1.01359E-06,-0.999999,0.00133435,-1.49957E-06],[-2,0,0,0],[9E+09,9E+09,9E+09, 9E+09,9E+09,9E+09]];
+
+!ROBTARGET Place Pallet
+PERS robtarget pPalletPlace:=[[-268.16,1867.13,-54.63],[1.0683E-6,0.698987,-0.715134,1.4611E-6],[1,0,0,0],[9E+9,9E+9,9E+9, 9E+9,9E+9,9E+9]];
+PERS robtarget pPalletClearPlace:=[[-268.16,1867.13,1995.37],[1.0683E-6,0.698987,-0.715134,1.4611E-6],[1,0,0,0],[9E+9,9E+9,9E+9, 9E+9,9E+9,9E+9]];
+PERS robtarget pPalletWaitPlace:=[[-268.16,1867.13,195.37],[1.0683E-6,0.698987,-0.715134,1.4611E-6],[1,0,0,0],[9E+9,9E+9,9E+9, 9E+9,9E+9,9E+9]];
+
+
+
+!*********************************************!
+!Box/Product Parameters
+!*********************************************!
+CONST num TP_PROGRAM := 0;
+
+CONST num nP02_EK32_W:=465;
+CONST num nP02_EK32_D:=353;
+CONST num nP02_EK32_H:=513;
+
+CONST num nP03_DI_W:=445;
+CONST num nP03_DI_D:=250;
+CONST num nP03_DI_H:=580;
+    
+ENDMODULE
